@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - mlflow
+    networks:
+      - mlflow-network
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlflow
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri file:/app/logs/mlruns --default-artifact-root /mlflow
+
+    networks:
+      - mlflow-network
+
+networks:
+  mlflow-network:
+    driver: bridge
+
+volumes:
+  mlflow_data:
+  spark-temp:
